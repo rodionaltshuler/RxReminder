@@ -18,6 +18,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
+import com.ottamotta.reminder.location.exceptions.GoogleApiClientConnectionException;
+import com.ottamotta.reminder.location.exceptions.LocationDisabledException;
+import com.ottamotta.reminder.location.exceptions.MissingPermissionException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.ottamotta.reminder.location;
+package com.ottamotta.reminder.location.exceptions;
 
 import android.support.annotation.Nullable;
 
