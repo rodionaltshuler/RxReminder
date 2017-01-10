@@ -1,9 +1,11 @@
 package com.ottamotta.reminder;
 
+import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.ottamotta.reminder.activityrecognition.ActivityRecognition;
@@ -25,12 +27,15 @@ public class LocationActivity extends AppCompatActivity {
 
     private Subscription subscription;
 
+    private Context context;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location_activity);
         textView = (TextView) findViewById(R.id.text);
         locationObservable = LocationSubject.getInstance(getApplicationContext());
+        context = this.getApplicationContext();
     }
 
     @Override
@@ -38,8 +43,10 @@ public class LocationActivity extends AppCompatActivity {
         super.onStart();
         subscription = trackPointObservable(
                 locationObservable.getLocationObservable(),
-                new ActivityRecognition(this).getSingle().toObservable().compose(new ActivityRecognizedTransformer())
-        ).subscribe(observer);
+                new ActivityRecognition(context).getObservable().compose(new ActivityRecognizedTransformer())
+        )
+                .doOnNext(trackPoint -> Log.d("TrackPoint", trackPoint.toString()))
+                .subscribe(observer);
     }
 
     @Override
@@ -52,7 +59,7 @@ public class LocationActivity extends AppCompatActivity {
 
     private Observable<TrackPoint> trackPointObservable(Observable<Location> locationObservable,
                                                         Observable<UserActivity> userActivityObservable) {
-        return Observable.zip(locationObservable, userActivityObservable, (location, userActivity) -> {
+        return Observable.combineLatest(locationObservable, userActivityObservable, (location, userActivity) -> {
             TrackPoint trackPoint = new TrackPoint();
             trackPoint.setLocation(location.getLatitude(), location.getLongitude());
             trackPoint.setUserActivity(userActivity);

@@ -1,12 +1,13 @@
 package com.ottamotta.reminder.activityrecognition;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.ottamotta.reminder.googleapiclient.GoogleApiClientObservable;
 
-import rx.Single;
+import rx.Observable;
 import rx.functions.Func1;
 
 public class ActivityRecognition {
@@ -17,13 +18,17 @@ public class ActivityRecognition {
         this.context = context;
     }
 
-    public Single<ActivityRecognitionResult> getSingle() {
+    public Observable<ActivityRecognitionResult> getObservable() {
         return new GoogleApiClientObservable(context)
-                .flatMap(new Func1<GoogleApiClient, Single<ActivityRecognitionResult>>() {
+                .toObservable()
+                .flatMap(new Func1<GoogleApiClient, Observable<ActivityRecognitionResult>>() {
                     @Override
-                    public Single<ActivityRecognitionResult> call(GoogleApiClient googleApiClient) {
-                        return new ActivityRecognitionSingle(context, googleApiClient);
+                    public Observable<ActivityRecognitionResult> call(GoogleApiClient googleApiClient) {
+                        return new ActivityRecognitionObservable(context, googleApiClient);
                     }
-                });
+                })
+                .doOnNext(activityRecognitionResult ->
+                        Log.d("ActvitiyRecognition", activityRecognitionResult.getMostProbableActivity().toString()))
+                .doOnError(error -> Log.e("ActvitiyRecognition", error.getMessage()));
     }
 }
