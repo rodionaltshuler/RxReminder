@@ -184,6 +184,10 @@ public class LocationSubject {
         }
     }
 
+    public Observable<Location> getLocationObservable() {
+        return publishSubjectLocation;
+    }
+
     public Subscription subscribe(Observer<Location> subscriber) {
         if (publishSubjectLocation.hasThrowable()) {
             restart();

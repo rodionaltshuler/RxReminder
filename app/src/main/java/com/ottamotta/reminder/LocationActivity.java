@@ -6,11 +6,16 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.google.android.gms.location.ActivityRecognitionResult;
+import com.ottamotta.reminder.activityrecognition.ActivityRecognitionSingle;
+import com.ottamotta.reminder.activityrecognition.UserActivity;
 import com.ottamotta.reminder.location.LocationSubject;
 import com.ottamotta.reminder.location.PromptUserActivity;
 
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func1;
 
 public class LocationActivity extends AppCompatActivity {
 
@@ -31,7 +36,9 @@ public class LocationActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        locationSubscription = locationObservable.subscribe(locationObserver);
+
+
+
     }
 
     @Override
