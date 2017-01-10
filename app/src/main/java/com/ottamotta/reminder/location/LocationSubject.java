@@ -6,19 +6,15 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Places;
-import com.ottamotta.reminder.location.exceptions.GoogleApiClientConnectionException;
+import com.ottamotta.reminder.googleapiclient.GoogleApiClientObservable;
 import com.ottamotta.reminder.location.exceptions.LocationDisabledException;
 import com.ottamotta.reminder.location.exceptions.MissingPermissionException;
 
@@ -65,6 +61,10 @@ public class LocationSubject {
         restart();
     }
 
+    public Observable<Location> getLocationObservable() {
+        return publishSubjectLocation;
+    }
+
     private void restart() {
 
         publishSubjectLocation = PublishSubject.create();
@@ -83,39 +83,8 @@ public class LocationSubject {
     private Observable<Location> restartableLocationObservable() {
         return checkLocationEnabled()
                 .flatMap(locationEnabled -> checkMissedPermissions())
-                .flatMap(permissionsGranted -> googleApiClient())
+                .flatMap(permissionsGranted -> new GoogleApiClientObservable(context).toObservable())
                 .flatMap(this::requestLocationObservable);
-    }
-
-    private Observable<GoogleApiClient> googleApiClient() {
-        return
-                Observable.create(subscriber -> {
-                    Log.d(TAG, "Creating googleApiClient");
-                    GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
-                            .addApi(LocationServices.API)
-                            .addApi(ActivityRecognition.API)
-                            .addApi(Places.PLACE_DETECTION_API)
-                            .build();
-
-                    googleApiClient.registerConnectionFailedListener(connectionResult -> {
-                        subscriber.onError(new GoogleApiClientConnectionException(connectionResult));
-                    });
-
-
-                    googleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                        @Override
-                        public void onConnected(@Nullable Bundle bundle) {
-                            subscriber.onNext(googleApiClient);
-                            subscriber.onCompleted();
-                        }
-
-                        @Override
-                        public void onConnectionSuspended(int i) {
-                        }
-                    });
-
-                    googleApiClient.connect();
-                });
     }
 
     private Observable<Location> requestLocationObservable(GoogleApiClient connectedGoogleApiClient) {
@@ -182,10 +151,6 @@ public class LocationSubject {
             boolean networkEnabled = systemLocationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER);
             return gpsEnabled || networkEnabled;
         }
-    }
-
-    public Observable<Location> getLocationObservable() {
-        return publishSubjectLocation;
     }
 
     public Subscription subscribe(Observer<Location> subscriber) {

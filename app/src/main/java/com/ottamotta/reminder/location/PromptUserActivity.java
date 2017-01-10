@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.ottamotta.reminder.location.exceptions.GoogleApiClientConnectionException;
+import com.ottamotta.reminder.googleapiclient.exceptions.GoogleApiClientConnectionException;
 import com.ottamotta.reminder.location.exceptions.LocationDisabledException;
 import com.ottamotta.reminder.location.exceptions.MissingPermissionException;
 

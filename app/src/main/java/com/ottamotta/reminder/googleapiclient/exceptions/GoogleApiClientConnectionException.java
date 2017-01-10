@@ -1,4 +1,4 @@
-package com.ottamotta.reminder.location.exceptions;
+package com.ottamotta.reminder.googleapiclient.exceptions;
 
 import android.support.annotation.Nullable;
 

@@ -4,7 +4,7 @@ import android.location.Location;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.ottamotta.reminder.activityrecognition.UserActivity;
+import com.ottamotta.reminder.userActivity.UserActivity;
 
 public class TrackPoint {
 

@@ -1,4 +1,4 @@
-package com.ottamotta.reminder.activityrecognition;
+package com.ottamotta.reminder.userActivity;
 
 import android.support.annotation.Nullable;
 
